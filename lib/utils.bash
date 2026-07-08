@@ -34,47 +34,47 @@ list_all_versions() {
 }
 
 detect_os() {
-  local os="${OS:-}"
-  if [ -z "$os" ]; then
-    case $(uname | tr '[:upper:]' '[:lower:]') in
-    linux*)
-      echo 'Linux'
-      ;;
-    darwin*)
-      echo 'Darwin'
-      ;;
-    msys* | cygwin* | mingw* | nt | win*)
-      fail 'windows based os is not supported yet'
-      ;;
-    *)
-      fail "Unknown operating system."
-      ;;
-    esac
-  else
-    echo "$os"
-  fi
+	local os="${OS:-}"
+	if [ -z "$os" ]; then
+		case $(uname | tr '[:upper:]' '[:lower:]') in
+		linux*)
+			echo 'Linux'
+			;;
+		darwin*)
+			echo 'Darwin'
+			;;
+		msys* | cygwin* | mingw* | nt | win*)
+			fail 'windows based os is not supported yet'
+			;;
+		*)
+			fail "Unknown operating system."
+			;;
+		esac
+	else
+		echo "$os"
+	fi
 }
 
 detect_arch() {
-  local arch="${ARCH:-}"
-  if [ -z "$arch" ]; then
-    case $(uname -m) in
-    x86_64)
-      echo "x86_64"
-      ;;
-    i386)
-      echo "i386"
-      ;;
-    arm64 | aarch64)
-      echo "arm64"
-      ;;
-    *)
-      fail "Unsupported architecture: $(uname -m)"
-      ;;
-    esac
-  else
-    echo "$arch"
-  fi
+	local arch="${ARCH:-}"
+	if [ -z "$arch" ]; then
+		case $(uname -m) in
+		x86_64)
+			echo "x86_64"
+			;;
+		i386)
+			echo "i386"
+			;;
+		arm64 | aarch64)
+			echo "arm64"
+			;;
+		*)
+			fail "Unsupported architecture: $(uname -m)"
+			;;
+		esac
+	else
+		echo "$arch"
+	fi
 }
 
 download_release() {
