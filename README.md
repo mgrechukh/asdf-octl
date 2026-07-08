@@ -15,7 +15,7 @@
 
 # Dependencies
 
-- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
+- `bash`, `curl`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
 
 # Install
 
@@ -37,7 +37,7 @@ asdf list-all octl
 asdf install octl latest
 
 # Set a version globally (on your ~/.tool-versions file)
-asdf global octl latest
+asdf set -u octl latest
 
 # Now octl commands are available
 octl --version
