@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for octl.
 GH_REPO="https://github.com/outscale/octl"
 TOOL_NAME="octl"
 TOOL_TEST="octl --version"
@@ -31,21 +30,65 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if octl has other means of determining installable versions.
 	list_github_tags
 }
 
+detect_os() {
+  local os="${OS:-}"
+  if [ -z "$os" ]; then
+    case $(uname | tr '[:upper:]' '[:lower:]') in
+    linux*)
+      echo 'Linux'
+      ;;
+    darwin*)
+      echo 'Darwin'
+      ;;
+    msys* | cygwin* | mingw* | nt | win*)
+      fail 'windows based os is not supported yet'
+      ;;
+    *)
+      fail "Unknown operating system."
+      ;;
+    esac
+  else
+    echo "$os"
+  fi
+}
+
+detect_arch() {
+  local arch="${ARCH:-}"
+  if [ -z "$arch" ]; then
+    case $(uname -m) in
+    x86_64)
+      echo "x86_64"
+      ;;
+    i386)
+      echo "i386"
+      ;;
+    arm64 | aarch64)
+      echo "arm64"
+      ;;
+    *)
+      fail "Unsupported architecture: $(uname -m)"
+      ;;
+    esac
+  else
+    echo "$arch"
+  fi
+}
+
 download_release() {
-	local version filename url
+	local version filename url os arch
 	version="$1"
 	filename="$2"
 
-	# TODO: Adapt the release URL convention for octl
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	os="$(detect_os)"
+	arch="$(detect_arch)"
+	url="$GH_REPO/releases/download/v${version}/octl_${os}_${arch}"
 
 	echo "* Downloading $TOOL_NAME release $version..."
-	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+	curl "${curl_opts[@]}" -o "$filename" "$url" || fail "Could not download $url"
+	chmod +x "$filename"
 }
 
 install_version() {
@@ -59,9 +102,8 @@ install_version() {
 
 	(
 		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+		cp "$ASDF_DOWNLOAD_PATH/$TOOL_NAME" "$install_path/$TOOL_NAME"
 
-		# TODO: Assert octl executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
